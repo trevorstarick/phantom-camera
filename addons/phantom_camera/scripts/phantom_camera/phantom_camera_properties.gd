@@ -44,7 +44,7 @@ var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
-var follow_damping_value: float = 10
+var follow_damping_value: Vector3 = Vector3(10, 10, 10)
 
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
@@ -178,13 +178,22 @@ func add_follow_properties() -> Array:
 		})
 
 		if follow_has_damping:
-			_property_list.append({
-				"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
-				"type": TYPE_FLOAT,
-				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "0.01, 100, 0.01,",
-				"usage": PROPERTY_USAGE_DEFAULT,
-			})
+			if is_2D:
+				_property_list.append({
+					"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
+					"type": TYPE_VECTOR2,
+					"hint": PROPERTY_HINT_RANGE,
+					"hint_string": "0.01, 100, 0.01,",
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
+			else:
+				_property_list.append({
+					"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
+					"type": TYPE_VECTOR3,
+					"hint": PROPERTY_HINT_RANGE,
+					"hint_string": "0.01, 100, 0.01,",
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
 
 	return _property_list
 
@@ -375,7 +384,10 @@ func set_follow_properties(property: StringName, value, pcam: Node) -> void:
 		pcam.notify_property_list_changed()
 
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
-		follow_damping_value = value
+		if is_2D or typeof(value) == TYPE_VECTOR2:
+			follow_damping_value = Vector3(value.x, value.y, 0)
+		else:
+			follow_damping_value = value
 
 
 func set_tween_properties(property: StringName, value, pcam: Node) -> void:

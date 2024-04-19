@@ -339,7 +339,7 @@ func _get(property: StringName):
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:							return follow_group_zoom_margin
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
-	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Vector2(Properties.follow_damping_value.x, Properties.follow_damping_value.y)
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
 
@@ -418,7 +418,7 @@ func _property_get_revert(property: StringName):
 		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return false
 		
 		Constants.FOLLOW_DAMPING_NAME: 									return false
-		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10.0
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return Vector2(10.0, 10.0)
 		
 		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
 		Constants.TWEEN_ONLOAD_NAME: 									return true
@@ -543,12 +543,19 @@ func _set_pcam_global_position(_global_position: Vector2, delta: float) -> void:
 		_global_position = _set_limit_clamp_position(_global_position)
 
 	if Properties.follow_has_damping:
-		set_global_position(
-			get_global_position().lerp(
-				_global_position,
-				delta * Properties.follow_damping_value
-			)
+		var x = lerp(
+			get_global_position().x,
+			_global_position.x,
+			delta * Properties.follow_damping_value.x
 		)
+		
+		var y = lerp(
+			get_global_position().y,
+			_global_position.y,
+			delta * Properties.follow_damping_value.y
+		)
+
+		set_global_position(Vector2(x, y))
 	else:
 		set_global_position(_global_position)
 
@@ -853,11 +860,11 @@ func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
 ## Assigns new Damping value.
-func set_follow_damping_value(value: float) -> void:
-	Properties.follow_damping_value = value
+func set_follow_damping_value(value: Vector2) -> void:
+	Properties.follow_damping_value = Vector3(value.x, value.y, 0)
 ## Gets the current Follow Damping value.
-func get_follow_damping_value() -> float:
-	return Properties.follow_damping_value
+func get_follow_damping_value() -> Vector2:
+	return Vector2(Properties.follow_damping_value.x, Properties.follow_damping_value.y)
 
 ## Enables or disables Pixel Perfect following.
 func set_pixel_perfect(value: bool) -> void:

@@ -259,7 +259,19 @@ func _pcam_follow(delta: float) -> void:
 
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
-				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
+				var x = lerp(
+					camera_2D.zoom.x,
+					_active_pcam.x,
+					delta * _active_pcam.Properties.follow_damping_value.x
+				)
+
+				var y = lerp(
+					camera_2D.zoom.y,
+					_active_pcam.zoom.y,
+					delta * _active_pcam.Properties.follow_damping_value.y
+				)
+
+				camera_2D.zoom = Vector2(x, y)
 			else:
 				camera_2D.set_zoom(_active_pcam.zoom)
 		else:

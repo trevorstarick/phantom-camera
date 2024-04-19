@@ -455,7 +455,7 @@ func _property_get_revert(property: StringName) -> Variant:
 		FOLLOW_SPRING_ARM_MARGIN_NAME:									return 0.01
 		
 		Constants.FOLLOW_DAMPING_NAME: 									return false
-		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return Vector3(10, 10, 10)
 		
 		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
 		Constants.TWEEN_ONLOAD_NAME: 									return true
@@ -705,12 +705,25 @@ func _get_position_offset_distance() -> Vector3:
 
 func _interpolate_position(_global_position: Vector3, delta: float, target: Node3D = self) -> void:
 	if Properties.follow_has_damping:
-		target.set_global_position(
-			target.get_global_position().lerp(
-				_global_position,
-				delta * Properties.follow_damping_value
-			)
+		var x = lerp(
+			target.get_global_position().x,
+			_global_position.x,
+			delta * Properties.follow_damping_value.x
 		)
+		
+		var y = lerp(
+			target.get_global_position().y,
+			_global_position.y,
+			delta * Properties.follow_damping_value.y
+		)
+		
+		var z = lerp(
+			target.get_global_position().z,
+			_global_position.z,
+			delta * Properties.follow_damping_value.z
+		)
+		
+		target.set_global_position(Vector3(x, y, z))
 	else:
 		target.set_global_position(_global_position)
 
@@ -917,7 +930,7 @@ func get_follow_has_damping() -> bool:
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
 ## Gets the currents Follow Damping value.
-func get_follow_damping_value() -> float:
+func get_follow_damping_value() -> Vector3:
 	return Properties.follow_damping_value
 
 
